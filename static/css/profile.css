@@ -71,7 +71,10 @@
     padding: 2rem;
 }
 
-.profile-add-btn { margin-left: auto; flex-shrink: 0; }
+.profile-add-btn {
+    margin-left: auto;
+    white-space: nowrap;
+}
 
 .profile-avatar {
     width: 72px;
