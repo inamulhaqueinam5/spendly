@@ -4,6 +4,52 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+<style>
+    .video-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background: rgba(15, 15, 15, 0.72);
+    }
+    .video-modal.is-open { display: flex; }
+    .video-modal-dialog {
+        position: relative;
+        width: 100%;
+        max-width: 880px;
+    }
+    .video-modal-frame {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 aspect ratio */
+        background: #000;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+    .video-modal-frame iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+    .video-modal-close {
+        position: absolute;
+        top: -2.75rem;
+        right: 0;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 2rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -24,7 +70,7 @@
         </p>
         <div class="hero-actions">
             <a href="{{ url_for('register') }}" class="btn-primary">Create free account</a>
-            <button type="button" class="btn-primary">See how it works</button>
+            <button type="button" class="btn-primary" id="demoBtn">See how it works</button>
         </div>
     </div>
 
@@ -104,4 +150,67 @@
     </div>
 </section>
 
+<div class="video-modal" id="videoModal" aria-hidden="true">
+    <div class="video-modal-dialog" role="dialog" aria-modal="true" aria-label="See how Spendly works">
+        <button type="button" class="video-modal-close" id="videoModalClose" aria-label="Close video">&times;</button>
+        <div class="video-modal-frame">
+            <iframe id="videoModalIframe"
+                    src=""
+                    title="See how Spendly works"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    (function () {
+        // Placeholder YouTube embed URL — replace with the real one later.
+        var VIDEO_URL = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0';
+
+        var openBtn = document.getElementById('demoBtn');
+        var modal = document.getElementById('videoModal');
+        var closeBtn = document.getElementById('videoModalClose');
+        var iframe = document.getElementById('videoModalIframe');
+
+        function openModal() {
+            iframe.src = VIDEO_URL;
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            // Clearing the src unloads the player so audio/video stops immediately.
+            iframe.src = '';
+            document.body.style.overflow = '';
+        }
+
+        if (openBtn) {
+            openBtn.addEventListener('click', openModal);
+        }
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeModal);
+        }
+
+        // Close when clicking the overlay outside the dialog.
+        modal.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Close on Escape for good measure.
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+                closeModal();
+            }
+        });
+    })();
+</script>
 {% endblock %}
